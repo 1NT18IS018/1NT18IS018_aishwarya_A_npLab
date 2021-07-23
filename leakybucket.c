@@ -1,61 +1,53 @@
-/*#include<stdio.h>
-
-int main(){
-    int incoming, outgoing, buck_size, n, store = 0;
-    printf("Enter bucket size, outgoing rate and no of inputs: ");
-    scanf("%d %d %d", &buck_size, &outgoing, &n);
-
-    while (n != 0) {
-        printf("Enter the incoming packet size : ");
-        scanf("%d", &incoming);
-        printf("Incoming packet size %d\n", incoming);
-        if (incoming <= (buck_size - store)){
-            store += incoming;
-            printf("Bucket buffer size %d out of %d\n", store, buck_size);
-        } else {
-            printf("Dropped %d no of packets\n", incoming - (buck_size - store));
-            printf("Bucket buffer size %d out of %d\n", store, buck_size);
-            store = buck_size;
-        }
-        store = store - outgoing;
-        printf("After outgoing %d packets left out of %d in buffer\n", store, buck_size);
-        n--;
-    }
-}*/
-
-
-
 #include<stdio.h>
 #include<stdlib.h>
-int op,i,packets[5],bucketsize;
-void bktinput(int a,int b)
-{
-if(a>bucketsize)
-printf("\n\t\t bucket overflow\n");
-else
-{
-while(a>b)
-{
-printf("\n\t\t %d bytes outputed",b);
-a-=b;
-}
-if(a>0)
-printf("\n\t\t last %d bytes sent",a);
-printf("\n\t\t leaky bucket successful\n");
-}
-}
+#define MIN(x,y) (x>y)?y:x
 int main()
 {
-printf("enter the bucket size:");
-scanf("%d",&bucketsize);
-printf("enter the output rate:");
-scanf("%d",&op);
-printf("enter 5 packets in streams:");
-for(i=0;i<5;i++)
-scanf("%d",&packets[i]);
-for(i=0;i<5;i++)
-{
-printf("\n packet no=%d\t packet size=%d",i,packets[i]);
-bktinput(packets[i],op);
+	int orate,drop=0,cap,x,count=0,inp[10]={0},i=0,nsec,ch;
+	printf("\n enter bucket size : ");
+	scanf("%d",&cap);
+	printf("\n enter output rate :");
+	scanf("%d",&orate);
+	do{
+	printf("\n enter number of packets coming at second %d :",i+1);
+	scanf("%d",&inp[i]);
+	if(inp[i]>cap)
+	{
+		printf("Bucket overflow\n");		
+		printf("Packet Discarded\n");
+		exit(0);
+	}
+	i++;
+	printf("\n enter 1 to contiue or 0 to quit..........");
+	scanf("%d",&ch);
 }
-} 
+while(ch);
+nsec=i;
+printf("\n Second \t Recieved \t Sent \t Dropped \tRemained \n");
+for(i=0;count || i<nsec;i++)
+{
+	printf("  %d",i+1);
+	printf(" \t\t%d\t ",inp[i]);
+	printf(" \t%d\t ",MIN((inp[i]+count),orate));
+	if((x=inp[i]+count-orate)>0)
+	{
+		if(x>cap)
+		{
+			count=cap;
+			drop=x-cap;
+		}
+		else
+		{
+			count=x;
+			drop=0;
+		}
+	}
+	else
+	{
+		drop=0;
+		count=0;
+	}
+	printf(" \t %d\t %d \n",drop,count);
+}
+return 0;
+}
